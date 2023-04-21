@@ -1,0 +1,38 @@
+// JSON.ArraySlice ( array ; start ; numberOfValues )
+// Orignally done by Steve Allen (GitHub: @steveAllen0112) of Richard Carlton Consulting (RCC) 05/2018
+// With some "polishing" suggestions from Michael Wallace (GitHub: @mw777rcc), also of RCC
+Case (
+	/* Check if it's even trying to be an array */
+	Left ( Trim ( array ) ; 1 ) <> "["
+;		"? Invalid input; this function only accepts arrays."
+
+	/* Check if it's valid JSON */
+;	Let ( $check = JSONGetElement ( array ; 0 ) ; Left ( $check ; 1 ) = "?" )
+;		$check
+
+;	/* OK, now we can actually proccess it */
+
+	Let ([blank=""
+
+	/* turn the array into something we can work with with List management functions already in FM */
+	;	jsonValues			= JSONListValues ( array ; "" )
+
+	/* now grab what we were actually looking for - the subset of array items we want */
+	;	sliced				= MiddleValues ( jsonValues ; start ; numberOfValues )
+
+	/* But MiddleValues appends an extra return on the end that we need to nix before turning the list back into JSON. */
+	;	lastReturnStripped	= Replace ( sliced ; Length ( sliced ) ; 1 ; "" )    
+
+	/* now we have to restore this to proper JSON that can be wrapped with the array brackets. */
+	;	putBackAsJSON		= "["
+								& Substitute ( lastReturnStripped 
+									/* we have to separate the objects by commas again for that. */
+									; [ "¶" ; "," ]                            
+									) &
+							  "]"
+	];
+
+	putBackAsJSON
+
+	)  //end let
+) //end case

@@ -1,6 +1,6 @@
 /**
  *
- * performs a shallow merge on two JSONObjects
+ * performs a deep merge on two JSONObjects
  *
  * @param {object} target the object to merge into
  * @param {object} source the object to merge into
@@ -8,49 +8,75 @@
  * @module fm-json-additions
  * @see https://github.com/geistinteractive/fm-json-additions
  *
+ * @history 2023-04-21 fixed GH#24, fmdev@danshockley.com
+ * @history 2018-09-07 fixed issue merging object into null value, dave@geistinteractive.com
+ * @history 2018-08-04 fixed GH#19, dave@geistinteractive.com
+ * @history 2018-02-11 deep merge support, dave@geistinteractive.com
  * @history 2017–05-15 fixed gh# 1, todd@geistinteractive.com
  * @history 2017–04-04 created, todd@geistinteractive.com
  *
  */
 
 
-Let(
-[
+Let( [
+	sourceKeys = JSONListKeys ( source ; "" ) ;
+	targetKeys = JSONListKeys ( target ; "" )
+] ;
+	Case( 
 
-sourceKeys = JSONListKeys ( source ; "" );
-targetKeys = JSONListKeys ( target ; "" )
+		// exit on error
+		Left( sourceKeys ; 1 ) = "?" ; 
+			sourceKeys & " In Source." ;
 
-];
-Case(
+		Left( targetKeys ; 1 ) = "?" ; 
+			targetKeys  & " In Target." ;
+			
+		Left(  JSONGetElement ( source ; "" ) ;1 ) = "[" ; 
+			"? * Array in Source. Must be an object" ;
 
-	//look for error ans exit
-	Left(sourceKeys; 1) = "?" ; sourceKeys & " In Source.";
-	Left(targetKeys; 1) = "?" ; targetKeys  & " In Target." ;
-	Left(  JSONGetElement (source ; "" )  ;1) = "[" ; "? * Array in Source. Must be an object" ;
+		// look for the last recursion and exit
+		ValueCount( sourceKeys ) < 1  ; 
+			target ; // done
 
-	// look for the last recusion  and exit
-	ValueCount(sourceKeys) < 1  ; target ; // done
 
- 
-	Let(
-	[
+		Let( [
+			// merge this rounds key into the target
+			thisKey = GetValue( sourceKeys ; 1 ) ;
+			thisValue = JSONGetElement( source ; thisKey ) ;
+			
+			// The value of the matching object in the target, if present
+			targetValue = JSONGetElement( target ; thisKey ) ;
+			firstChar = Left( thisValue ; 1 ) ;
+			needToCheckForNumber = Length ( thisValue  ) <=18 and Filter( firstChar ; "0123456789" ) = firstChar ; 
+			JSONType = Case ( 
+				GetAsNumber ( Get ( ApplicationVersion ) ) >= 19.51 ;
+				JSONGetElementType ( source; thisKey ) ;
+				
+				( needToCheckForNumber 
+					and GetAsText( thisValue ) <> GetAsNumber( thisValue ) 
+				) or firstChar = "\"" ;
+				JSONString 
+				; ""
+			 ) ;
 
-       // merge this rounds key into the target
-	thisKey = GetValue(sourceKeys ; 1 );
-	thisValue = JSONGetElement( source; thisKey );
-	firstChar = Left(thisValue; 1);
-	needToCheckForNumber = Filter(firstChar ; "0123456789") = firstChar ; 
-	JSONType = If( needToCheckForNumber and GetAsText(thisValue) <> GetAsNumber(thisValue)  ; JSONString ; "") ;
+			thisValueOut = If ( Left ( thisValue ; 1 ) = "{" ; // this is an object
 
-        newTarget = JSONSetElement ( target ; thisKey ; thisValue ; JSONType );
+				// merge this object and return the result
+				Let ( targetValue = If ( targetValue = "" ; "{}" ; targetValue ) ; // if object doesn't exist in target, create empty
+					JSON.Merge ( targetValue ; thisValue ) 
+				) ;  
+					
+				thisValue
 
-	// remove this rounds key from the source
-	newSource = JSONDeleteElement ( source ; thisKey )
-	]; 
+			 ) ; 
 
-	// repeat
-	JSON.Merge(newTarget ; newSource ) 
-       ) 
-)
+			newTarget = JSONSetElement ( target ; thisKey ; thisValueOut ; JSONType ) ;
 
-)
+			// remove this rounds key from the source
+			newSource = JSONDeleteElement ( source ; thisKey )
+		] ; 
+			// repeat
+			JSON.Merge( newTarget ; newSource ) 
+		 ) 
+	 )
+ )

@@ -1,0 +1,26 @@
+/**
+ * 
+ * JSON.ArrayFromRelatedText ( ValueField )
+ *
+ *@params {reference} ValueField a reference to the field containing the desired value. 
+ *
+ *@returns {array} array containing the values from the related field, each item quoted
+ *
+ * @module fm-json-additions
+ * @see https://github.com/geistinteractive/fm-json-additions
+ * 
+ * @history 2020-06-01, Shawn A. Krueger (LuminFire), created JSON.ArrayFromRelatedText, which adds quotes around each item in the list.
+ * @history 2017-06-01, todd@geistinteractive.com, created JSON.ArrayFromRelated
+ */
+
+
+"[ \"" & 
+
+Substitute(
+    List ( ValueField ) ; 
+    "¶" ; "\", \""
+)
+
+& 
+
+"\" ]"

@@ -1,6 +1,6 @@
 /*
  * 
- * JSONArrayLength ( array ; path)
+ * JSON.ArrayLength ( array ; path)
  *
  * @param {array} array a valid JSON Array
  * @param {string} path the path to the array if it is nested
@@ -10,7 +10,8 @@
  * @module fm-json-additions
  * @see https://github.com/geistinteractive/fm-json-additions
  * 
- * @history 2017-04-09, todd@geistinteractive.com, created
+ * @history 2021-06-25, fmdev@danshockley.com, fixed gh# 18, bug-fix for empty string item.
+ * @history 2017-04-09, todd@geistinteractive.com, created. 
  *
  * =====================================
  */
@@ -18,15 +19,15 @@
 
 Let ( [
 	_array = Substitute ( array ; [ "\r" ; "" ] ; [ "\n" ; "" ]; ["null" ; "\"NULL\""] ); 
-	_values = JSONListValues ( _array ; path );
+	_keys = JSONListKeys ( _array ; path );
 	_array = JSONGetElement ( _array ; path );
 	isArray = ( Left ( _array ; 1 ) & Right ( _array ; 1 )  = "[]" )
 ];
 
 	Case (
 		not isArray ; 0 ;
-		Left ( _values ; 1 )  = "?" ; 0 ;
-		ValueCount ( _values )
+		Left ( _keys ; 1 )  = "?" ; 0 ;
+		ValueCount ( _keys )
 	) //end case
 
 ) //end let

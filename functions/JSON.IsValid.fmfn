@@ -1,19 +1,20 @@
-/**
+/*
  *
- * Tests to see if the JSON object is valid
+ * JSON.IsValid ( json)
+ * 
+ * Tests to see if the JSON object is valid.
  *
  * @param {object} json the JSON object to to test
 
  * @module fm-json-additions
  * @see https://github.com/geistinteractive/fm-json-additions
  *
+ * @history 2021-06-25, fmdev@danshockley.com, bug-fix to work without a "fake-out" being possible.
  * @history 2017–11-29 updated doc block for clarity, dave@geistinteractive.com
  * @history 2017–11-23 created, todd@geistinteractive.com
  *
  */
 
+Left ( JSONFormatElements ( json ) ; 1 ) ≠ "?"
 
-Left(
-   JSONGetElement ( json ; "doesnotmatterwhatishere" ); 3
-)
-<>"? *"
+/* If not valid, FormatElements will return an error starting with question mark. This is the method recommended by Claris.  */

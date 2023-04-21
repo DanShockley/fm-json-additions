@@ -1,0 +1,81 @@
+/**
+* =====================================
+* JSON.Diff ( target ; source ; result )
+*
+* PURPOSE:
+*    creates a JSON object with only the different values from the target, compared to the source
+* 
+* RETURNS:
+*    the Object
+*
+* PARAMETERS:
+*    target = the object to consider
+*    source = the object to get properties to compare to the target
+*    result = (optional) a starting object onto which the differences are added
+*
+* DEPENDENCIES:
+*    FileMaker 16
+*
+* FAMILY:
+*    JSON - Extensions to the Native JSON Functions
+*
+* HISTORY:
+*    2017-06-12 Lance Brandenberg, lance@geistinteractive.com: created
+*    2020-12-15 Dave Graham, dave@geistinteractive.com: trim before testing first character to handle edge case where text is being evaluated as a number (example: " 2001 Space Odyssey")
+*    2023-04-21 Dan Shockley, fmdev@danshockley.com: handle large numbers stored as string properly. Some refomatting of code. 
+*
+* =====================================
+*/
+
+
+Let(
+[
+
+	sourceKeys = JSONListKeys ( source ; "" );
+	targetKeys = JSONListKeys ( target ; "" );
+	resultObject = If ( IsEmpty ( result ); "{}"; result )
+
+];
+	Case (
+
+		// look for error and exit
+		Left ( sourceKeys ; 1 ) = "?" ; sourceKeys & " In Source." ;
+		Left ( targetKeys ; 1 ) = "?" ; targetKeys & " In Target." ;
+		Left ( JSONGetElement (target ; "" ) ; 1 ) = "[" ; "? * Array in Source. Must be an object" ;
+
+		// look for the last recusion and exit
+		ValueCount (targetKeys ) < 1 ; resultObject ; // done
+
+
+		Let (
+		[
+
+			// merge this rounds key into the target
+			targetKey = GetValue ( targetKeys ; 1 );
+			sourceValue = JSONGetElement ( source ; targetKey );
+			targetValue = JSONGetElement ( target ; targetKey );
+	
+			firstChar = Left ( Trim ( targetValue ) ; 1 );
+			needToCheckForNumber = Length ( targetValue  ) <= 18 and Filter ( firstChar ; "0123456789" ) = firstChar ; 
+			JSONType = Case ( 
+				GetAsNumber ( Get ( ApplicationVersion ) ) >= 19.51 ;
+				JSONGetElementType ( target ; targetKey ) ;
+				
+				( needToCheckForNumber 
+					and GetAsText ( targetValue ) <> GetAsNumber ( targetValue ) 
+				) or firstChar = "\"" ;
+				JSONString 
+				; ""
+			 ) ;
+
+			resultObject = If ( sourceValue <> targetValue ; JSONSetElement ( resultObject ; targetKey ; targetValue ; JSONType ) ; resultObject );
+	
+			// remove this round's key from the source
+			newTarget = JSONDeleteElement ( target ; targetKey )
+
+		]; 
+			// repeat
+			JSON.Diff ( newTarget ; Source ; resultObject ) 
+		) 
+	)
+)
