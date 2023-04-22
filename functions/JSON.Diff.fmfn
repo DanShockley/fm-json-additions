@@ -1,31 +1,31 @@
 /**
-* =====================================
-* JSON.Diff ( target ; source ; result )
-*
-* PURPOSE:
-*    creates a JSON object with only the different values from the target, compared to the source
-* 
-* RETURNS:
-*    the Object
-*
-* PARAMETERS:
-*    target = the object to consider
-*    source = the object to get properties to compare to the target
-*    result = (optional) a starting object onto which the differences are added
-*
-* DEPENDENCIES:
-*    FileMaker 16
-*
-* FAMILY:
-*    JSON - Extensions to the Native JSON Functions
-*
-* HISTORY:
-*    2017-06-12 Lance Brandenberg, lance@geistinteractive.com: created
-*    2020-12-15 Dave Graham, dave@geistinteractive.com: trim before testing first character to handle edge case where text is being evaluated as a number (example: " 2001 Space Odyssey")
-*    2023-04-21 Dan Shockley, fmdev@danshockley.com: handle large numbers stored as string properly. Some refomatting of code. 
-*
-* =====================================
-*/
+ * =====================================
+ * JSON.Diff ( target ; source ; result )
+ *
+ * PURPOSE:
+ *    creates a JSON object with only the different values from the target, compared to the source
+ * 
+ * RETURNS:
+ *    the Object
+ *
+ * PARAMETERS:
+ *    target = the object to consider
+ *    source = the object to get properties to compare to the target
+ *    result = (optional) a starting object onto which the differences are added
+ *
+ * DEPENDENCIES:
+ *    FileMaker 16
+ *
+ * FAMILY:
+ *    JSON - Extensions to the Native JSON Functions
+ *
+ * HISTORY:
+ *    2017-06-12 Lance Brandenberg, lance@geistinteractive.com: created
+ *    2020-12-15 Dave Graham, dave@geistinteractive.com: trim before testing first character to handle edge case where text is being evaluated as a number (example: " 2001 Space Odyssey")
+ *    2023-04-21 Dan Shockley, fmdev@danshockley.com: handle large numbers stored as string properly. Some refomatting of code. 
+ *
+ * =====================================
+ */
 
 
 Let(

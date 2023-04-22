@@ -1,6 +1,23 @@
-// JSON.ArraySlice ( array ; start ; numberOfValues )
-// Orignally done by Steve Allen (GitHub: @steveAllen0112) of Richard Carlton Consulting (RCC) 05/2018
-// With some "polishing" suggestions from Michael Wallace (GitHub: @mw777rcc), also of RCC
+/*
+ * 
+ * JSON.ArraySlice ( array ; start ; numberOfValues )
+ *
+ * @param {array} array a valid JSON Array
+ * @param {string} path the path to the array if it is nested
+ *
+ * @returns {number}
+ *
+ * @module fm-json-additions
+ * @see https://github.com/geistinteractive/fm-json-additions
+ * 
+ * @history 2023-04-22, fmdev@danshockley.com, reformatted documentation.
+ * @history 2018-05, Steve Allen (GitHub: @steveAllen0112) of Richard Carlton Consulting (RCC), 
+ *       with some "polishing" suggestions from Michael Wallace (GitHub: @mw777rcc), also of RCC
+ *
+ * =====================================
+ */
+
+
 Case (
 	/* Check if it's even trying to be an array */
 	Left ( Trim ( array ) ; 1 ) <> "["
