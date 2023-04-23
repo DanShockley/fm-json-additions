@@ -1,6 +1,6 @@
 # fm-json-additions
 
-Extra functions for working with JSON in FileMaker. These use on the new native functions in FM 16. Each function has tests for correctness.
+Extra functions for working with JSON in FileMaker. These build on the new native functions in FM 16. Each function has tests for correctness.
 
 ## Using
 Please see the test file for example on how the functions work. You can also just look at the [function listing](/docs.md) 
