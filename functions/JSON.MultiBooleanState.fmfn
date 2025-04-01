@@ -1,0 +1,31 @@
+// JSON.MultiBooleanState ( someJSON ; options )
+// version 2025-04-01
+
+/*
+	Returns the boolean state of all the keys in the specified JSON. 
+	Output:
+		True (1) - if all are true
+		False (0) - if all are false
+		-1 - if they are a mix of true and false.
+
+REQUIRES: 
+	FileMaker 18+ (While function).
+
+HISTORY:
+	2025-04-01 ( danshockley ): Created. No options yet, but included param for future possibilities. 
+*/
+
+
+Let ( [ 
+	itemValues = JSONListValues ( someJSON ; "" )
+]; 
+	Case ( 
+		PatternCount ( itemValues ; "0" ) > 0 and PatternCount ( itemValues ; "1" ) > 0
+		; -1    /* mixed */
+		; 
+		PatternCount ( itemValues ; "1" ) = ValueCount ( itemValues )
+		; True
+		; 
+		False
+		) 
+)

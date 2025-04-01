@@ -1,0 +1,51 @@
+// JSON.MultiBooleanToggle ( someJSON ; options )
+// version 2025-04-01
+
+/*
+	Toggles the boolean state of all the keys in the specified JSON. 
+	If all were originally:
+		True - makes them all False. 
+		False or mixed - makes them all True (but you can specify "MixedToFalse" in options to change this default behavior).
+
+	NOTE: If there are NON-Boolean keys in the JSON, this will not work properly. 
+
+REQUIRES: 
+	JSON.MultiBooleanState
+	FileMaker 18+ (While function).
+
+HISTORY:
+	2025-04-01 ( danshockley ): Created. 
+*/
+
+
+While ( [ 
+	/* initialVariables */
+	  mixedOutput = 
+	  	If ( PatternCount ( options ; "MixedToFalse" ) ; False ; True )
+	; origState = JSON.MultiBooleanState ( someJSON ; options )
+	; newState = 
+		Case ( 
+			Exact ( origState ; True ) 
+			; False 
+			; 
+			Exact ( origState ; False ) 
+			; True 
+			; 
+			mixedOutput 
+			)
+	; newJSON = someJSON
+	; keyList = JSONListKeys ( someJSON ; "" )
+	; countKeys = ValueCount ( keyList )
+	; iterNum = 0
+] ; 
+	/* condition */
+	iterNum < countKeys
+; [ 
+	/* logic*/
+	  oneKey = GetValue ( keyList ; iterNum + 1 )
+	; newJSON = JSONSetElement ( newJSON ; [ oneKey ; newState ; JSONBoolean ] )
+	; iterNum = iterNum + 1
+] ; 
+	/* result */
+	newJSON
+)
