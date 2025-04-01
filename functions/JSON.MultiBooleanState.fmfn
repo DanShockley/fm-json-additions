@@ -3,10 +3,12 @@
 
 /*
 	Returns the boolean state of all the keys in the specified JSON. 
+	NOTE: For now, this supports pseudo-booleans, where "1" and 1 (number) count as True, and "0" or 0 (number) count as False. 
 	Output:
 		True (1) - if all are true
 		False (0) - if all are false
 		-1 - if they are a mix of true and false.
+	By default, if the JSON has only empty values, or is NOT JSON, returns False. 
 
 REQUIRES: 
 	FileMaker 18+ (While function).
@@ -20,6 +22,12 @@ Let ( [
 	itemValues = JSONListValues ( someJSON ; "" )
 ]; 
 	Case ( 
+		"?" = Left ( itemValues ; 1 )
+		; False
+		;
+		IsEmpty ( itemValues )
+		; False
+		; 
 		PatternCount ( itemValues ; "0" ) > 0 and PatternCount ( itemValues ; "1" ) > 0
 		; -1    /* mixed */
 		; 
@@ -28,4 +36,5 @@ Let ( [
 		; 
 		False
 		) 
+
 )
